@@ -1,4 +1,4 @@
-# byd_project
+# egg_project
 
 byd project
 

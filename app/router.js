@@ -1,8 +1,9 @@
 'use strict';
 
 module.exports = app => {
-  const islogin = app.role.can('admin');
+  const isManager = app.role.can('isManager');
+  const validator = app.role.can('validator');
   app.post('/user/token', app.controller.user.getToken);
-  app.get('/user/info', app.controller.user.getUserInfo);
-  app.get('/admin', islogin, 'admin.index');
+  app.get('/user/info', validator, app.controller.user.getUserInfo);
+  app.get('/admin', isManager, 'admin.index');
 };

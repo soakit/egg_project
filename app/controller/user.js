@@ -46,9 +46,10 @@ module.exports = app => {
       }
     }
 
-    getUserInfo() {
-      // TODO:
-      console.log('UserController: getUserInfo');
+    async getUserInfo() {
+      const { service } = this;
+      const user = await service.user.getUserInfo();
+      this.success(user);
     }
   }
   return UserController;

@@ -25,10 +25,6 @@ module.exports = appInfo => {
     },
   };
 
-  // config.sessionRedis = {
-  //   name: '', // single redis does not need to config name
-  // };
-
   config.sequelize = {
     dialect: 'mysql', // support: mysql, mariadb, postgres, mssql
     database: 'byd_project',
@@ -41,6 +37,17 @@ module.exports = appInfo => {
   config.security = {
     csrf: {
       enable: false,
+    },
+  };
+
+  config.UserService = {
+    async getUserInfo(ctx, userObj) {
+      console.log('getUserInfo:', ctx, userObj);
+      return {
+        IsManager: true,
+      };
+      // Retrieve your user data from cookie, redis, db, whatever
+      // For common web applications using cookie, you may get session id with ctx.cookies
     },
   };
 

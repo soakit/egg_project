@@ -8,6 +8,7 @@ module.exports = app => {
       super(ctx);
       this.models = this.ctx.model;
     }
+
     async isValid(username, password) {
       const count = await this.models.User.count({
         where: {
@@ -17,6 +18,7 @@ module.exports = app => {
       });
       return count;
     }
+
     genToken(username, password) {
       const expireTime = new Date();
       expireTime.setDate(expireTime.getDate() + this.config.tokenExpireDays);
@@ -26,6 +28,12 @@ module.exports = app => {
         expireTime: expireTime.getTime(),
       });
       return AES.encrypt(str, this.config.keys).toString();
+    }
+
+    getUserInfo() {
+      return {
+        IsManager: true,
+      };
     }
   }
   return UserService;
