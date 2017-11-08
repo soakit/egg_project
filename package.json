@@ -9,6 +9,7 @@
     "egg-redis": "^1.0.2",
     "egg-scripts": "^2.1.0",
     "egg-sequelize": "^3.1.0",
+    "egg-userrole": "^1.1.2",
     "egg-validate": "^1.0.0",
     "md5": "^2.2.1",
     "mysql2": "^1.4.2"

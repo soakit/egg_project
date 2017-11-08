@@ -19,3 +19,8 @@ exports.sequelize = {
   enable: true,
   package: 'egg-sequelize',
 };
+
+exports.userrole = {
+  enable: true,
+  package: 'egg-userrole',
+};

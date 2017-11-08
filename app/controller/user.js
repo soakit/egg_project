@@ -2,7 +2,7 @@
 const md5 = require('md5');
 module.exports = app => {
   class UserController extends app.Controller {
-    * getToken() {
+    async getToken() {
       const { ctx, service } = this;
       const { request } = ctx;
       try {
@@ -12,9 +12,9 @@ module.exports = app => {
         }, request.body);
         let { username, password } = request.body;
         password = md5(password);
-        const isValid = yield service.user.isValid(username, password);
+        const isValid = await service.user.isValid(username, password);
         if (isValid) {
-          const data = yield service.user.genToken(username, password);
+          const data = await service.user.genToken(username, password);
           this.cacheUser(username, password);
           this.success(data);
           return;
@@ -24,23 +24,31 @@ module.exports = app => {
           msg: '用户名或密码不正确!',
         });
       } catch (error) {
+        ctx.logger.error('获取token错误:', error);
         if (error) {
-          console.log('ERROR:', error);
           if (error.code === 'invalid_param') {
             this.fail({
               code: 4000001,
               msg: '参数或参数类型错误!',
             });
-            return;
           } else if (error.code === 'ER_NO_SUCH_TABLE') {
             this.fail({
               code: 5000001,
               msg: '没有此表!',
             });
-            return;
+          } else {
+            this.fail({
+              code: 1000000,
+              msg: '未知错误!',
+            });
           }
         }
       }
+    }
+
+    getUserInfo() {
+      // TODO:
+      console.log('UserController: getUserInfo');
     }
   }
   return UserController;

@@ -1,6 +1,5 @@
 'use strict';
 
-// const CryptoJS = require('crypto-js');
 const AES = require('crypto-js/aes');
 
 module.exports = app => {
@@ -9,8 +8,8 @@ module.exports = app => {
       super(ctx);
       this.models = this.ctx.model;
     }
-    * isValid(username, password) {
-      const count = yield this.models.User.count({
+    async isValid(username, password) {
+      const count = await this.models.User.count({
         where: {
           username,
           password,
@@ -18,7 +17,7 @@ module.exports = app => {
       });
       return count;
     }
-    * genToken(username, password) {
+    genToken(username, password) {
       const expireTime = new Date();
       expireTime.setDate(expireTime.getDate() + this.config.tokenExpireDays);
       const str = JSON.stringify({
