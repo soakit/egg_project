@@ -31,10 +31,14 @@ module.exports = app => {
       return AES.encrypt(str, this.config.keys).toString();
     }
 
-    async getUserInfo() {
-      return {
-        IsManager: true,
-      };
+    async getUserInfo(username) {
+      const row = await this.models.User.findOne({
+        attributes: { exclude: [ 'password' ] },
+        where: {
+          username,
+        },
+      });
+      return row;
     }
   }
   return UserService;

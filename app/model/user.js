@@ -47,8 +47,6 @@ module.exports = app => {
     FaceImg: {
       type: TEXT,
     },
-  }, {
-    freezeTableName: true,
   });
 
   return User;

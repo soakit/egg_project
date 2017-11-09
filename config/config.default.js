@@ -32,6 +32,10 @@ module.exports = appInfo => {
     port: '3306',
     username: 'root',
     password: '123456',
+    define: {
+      freezeTableName: true, // 防表名后加s
+      timestamps: false, // createdAt
+    },
   };
 
   config.security = {

@@ -47,8 +47,9 @@ module.exports = app => {
     }
 
     async getUserInfo() {
+      this.logger.info('当前用户：', this.config.currentUser);
       const { service } = this;
-      const user = await service.user.getUserInfo();
+      const user = await service.user.getUserInfo(this.config.currentUser);
       this.success(user);
     }
   }
