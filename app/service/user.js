@@ -19,7 +19,7 @@ module.exports = app => {
       return count;
     }
 
-    genToken(username, password) {
+    async genToken(username, password) {
       const expireTime = new Date();
       expireTime.setDate(expireTime.getDate() + this.config.tokenExpireDays);
       const str = JSON.stringify({
@@ -30,7 +30,7 @@ module.exports = app => {
       return AES.encrypt(str, this.config.keys).toString();
     }
 
-    getUserInfo() {
+    async getUserInfo() {
       return {
         IsManager: true,
       };

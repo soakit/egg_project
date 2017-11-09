@@ -40,16 +40,5 @@ module.exports = appInfo => {
     },
   };
 
-  config.UserService = {
-    async getUserInfo(ctx, userObj) {
-      console.log('getUserInfo:', ctx, userObj);
-      return {
-        IsManager: true,
-      };
-      // Retrieve your user data from cookie, redis, db, whatever
-      // For common web applications using cookie, you may get session id with ctx.cookies
-    },
-  };
-
   return config;
 };

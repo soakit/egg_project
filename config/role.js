@@ -49,11 +49,9 @@ module.exports = app => {
    * 验证权限
    */
   app.role.use('isManager', async function() {
-    const ctx = this.app;
     const userObj = await validateToken(this);
-    console.log('ctx.serviceClasses.user.getUserInfo ====>', ctx.serviceClasses.user.getUserInfo);
-    const user = await ctx.config.UserService.getUserInfo(this, userObj);
-    ctx.logger.info('用户信息:', user);
+    const user = await this.service.user.getUserInfo(userObj);
+    this.logger.info('用户信息:', user);
     return user && user.IsManager;
   });
 };
