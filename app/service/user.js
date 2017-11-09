@@ -10,6 +10,7 @@ module.exports = app => {
     }
 
     async isValid(username, password) {
+      // 判断用户是否active(如果需要)
       const count = await this.models.User.count({
         where: {
           username,

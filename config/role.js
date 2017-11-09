@@ -3,7 +3,6 @@ const CryptoJS = require('crypto-js');
 module.exports = app => {
   app.role.failureHandler = function(action) {
     this.app.logger.error('无权限访问，action为', action);
-    this.redirect('/');
   };
 
   // token验证
