@@ -33,7 +33,6 @@ module.exports = app => {
       ctx.throw(401, '未取得授权');
       return;
     }
-    app.config.currentUser = userObj.username;
     ctx.logger.info(`解析token成功，用户是${userObj.username}!`);
     return userObj;
   };
@@ -43,6 +42,7 @@ module.exports = app => {
    */
   app.role.use('validator', async function() {
     const user = await validateToken(this);
+    app.config.currentUser = user.username;
     return !!user.username;
   });
   /**
@@ -54,7 +54,7 @@ module.exports = app => {
       return false;
     }
     const user = await this.service.user.getUserInfo(userObj.username);
-    this.logger.info('用户信息:', user);
-    return user && user.IsManager;
+    this.logger.info('用户信息:', user.username);
+    return user && user.IsManager === 1;
   });
 };

@@ -44,5 +44,7 @@ module.exports = appInfo => {
     },
   };
 
+  exports.middleware = [ 'lowercase' ];
+
   return config;
 };

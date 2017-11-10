@@ -37,6 +37,7 @@ module.exports = app => {
         where: {
           username,
         },
+        raw: true,
       });
       return row;
     }
