@@ -44,7 +44,10 @@ module.exports = appInfo => {
     },
   };
 
-  exports.middleware = [ 'lowercase' ];
+  config.middleware = [ 'lowercase' ];
+  config.lowercase = {
+    match: '*',
+  };
 
   return config;
 };
