@@ -31,11 +31,6 @@ module.exports = app => {
               code: 4000001,
               msg: '参数或参数类型错误!',
             });
-          } else if (error.code === 'ER_NO_SUCH_TABLE') {
-            this.fail({
-              code: 5000001,
-              msg: '没有此表!',
-            });
           } else {
             this.fail({
               code: 1000000,
@@ -47,9 +42,9 @@ module.exports = app => {
     }
 
     async getUserInfo() {
-      this.logger.info('当前用户：', this.config.currentUser);
-      const { service } = this;
-      const user = await service.user.getUserInfo(this.config.currentUser);
+      const { service, ctx } = this;
+      this.logger.info('当前用户：', ctx.session.user.username);
+      const user = await service.user.getUserInfo(ctx.session.user.username);
       this.success(user);
     }
   }

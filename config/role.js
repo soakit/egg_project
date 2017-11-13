@@ -7,6 +7,10 @@ module.exports = app => {
 
   // token验证
   const validateToken = async function(ctx) {
+    if (ctx.session.user && ctx.session.user.username) {
+      ctx.logger.info('session中已有用户:', ctx.session.user.username);
+      return ctx.session.user;
+    }
     const token = ctx.request.header['x-token'];
     if (!token) {
       ctx.logger.error('header携带x-token错误!');
@@ -34,6 +38,10 @@ module.exports = app => {
       return;
     }
     ctx.logger.info(`解析token成功，用户是${userObj.username}!`);
+    // 设置 Session
+    ctx.session.user = userObj;
+    ctx.session.maxAge = 24 * 60 * 60 * 1000; // 1天
+    ctx.logger.info('设置 Session:', ctx.session.user.username);
     return userObj;
   };
 
@@ -42,7 +50,6 @@ module.exports = app => {
    */
   app.role.use('validator', async function() {
     const user = await validateToken(this);
-    app.config.currentUser = user.username;
     return !!user.username;
   });
   /**
