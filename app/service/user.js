@@ -37,7 +37,9 @@ module.exports = app => {
         where: {
           username,
         },
-        raw: true,
+        include: [{
+          model: this.ctx.model.Menu,
+        }],
       });
       return row;
     }

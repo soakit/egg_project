@@ -49,6 +49,10 @@ module.exports = app => {
     },
   });
 
+  User.associate = function() {
+    User.belongsToMany(app.model.Menu, { through: app.model.UserMenu, foreignKey: 'StaffId' });
+  };
+
   return User;
 
 };
