@@ -1,7 +1,7 @@
 'use strict';
 
 const AES = require('crypto-js/aes');
-
+const sqlHelper = require('../utils/sql.js');
 module.exports = app => {
   class UserService extends app.Service {
     constructor(ctx) {
@@ -32,14 +32,35 @@ module.exports = app => {
     }
 
     async getUserInfo(username) {
-      const row = await this.models.User.findOne({
-        attributes: { exclude: [ 'password' ] },
-        where: {
-          username,
-        },
-        include: [{
-          model: this.ctx.model.Menu,
-        }],
+      // const row = await this.models.User.findOne({
+      //   attributes: { exclude: [ 'password' ] },
+      //   where: {
+      //     username,
+      //   },
+      //   include: [{
+      //     model: this.ctx.model.Menu,
+      //   }],
+      // });
+      // sql方式
+      const data = await this.models.User.sequelize.query(sqlHelper.USER_INFO(username), {
+        model: this.ctx.model.User,
+        raw: true,
+      });
+      const row = {},
+        prefix = 'Permissionmenus.';
+      row.Permissionmenus = [];
+      let obj = {};
+      data.forEach(function(item, index) {
+        obj = {};
+        for (const i in item) {
+          if (index === 0 && i.indexOf(prefix) === -1) {
+            row[i] = item[i];
+          }
+          if (i.indexOf(prefix) !== -1) {
+            obj[i.split(prefix)[1]] = item[i];
+          }
+        }
+        row.Permissionmenus.push(obj);
       });
       return row;
     }
