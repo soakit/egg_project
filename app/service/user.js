@@ -49,9 +49,8 @@ module.exports = app => {
       const row = {},
         prefix = 'Permissionmenus.';
       row.Permissionmenus = [];
-      let obj = {};
       data.forEach(function(item, index) {
-        obj = {};
+        const obj = {};
         for (const i in item) {
           if (index === 0 && i.indexOf(prefix) === -1) {
             row[i] = item[i];
