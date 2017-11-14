@@ -1,7 +1,5 @@
 'use strict';
 
-// const CryptoJS = require('crypto-js');
-
 module.exports = app => {
   class BaseController extends app.Controller {
     async cacheUser(username, password) {

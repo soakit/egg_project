@@ -1,4 +1,5 @@
 'use strict';
+const { statusHelper } = require('../app/utils/constants.js');
 const CryptoJS = require('crypto-js');
 module.exports = app => {
   app.role.failureHandler = function(action) {
@@ -14,7 +15,7 @@ module.exports = app => {
     const token = ctx.request.header['x-token'];
     if (!token) {
       ctx.logger.error('header携带x-token错误!');
-      ctx.throw(401, '未取得授权');
+      ctx.throw(statusHelper.NO_PERMISSION.code, statusHelper.NO_PERMISSION.desc);
       return;
     }
     let userObj = {};
@@ -23,24 +24,24 @@ module.exports = app => {
       userObj = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     } catch (error) {
       ctx.logger.error('解析x-token错误!', error);
-      ctx.throw(401, '未取得授权');
+      ctx.throw(statusHelper.NO_PERMISSION.code, statusHelper.NO_PERMISSION.desc);
       return;
     }
     const redisPwd = await app.redis.get(userObj.username);
     if (userObj.password !== redisPwd) {
       ctx.logger.error('密码错误!');
-      ctx.throw(401, '未取得授权');
+      ctx.throw(statusHelper.NO_PERMISSION.code, statusHelper.NO_PERMISSION.desc);
       return;
     }
     if (userObj.expireTime < Date.now()) {
       ctx.logger.error('授权已过期!');
-      ctx.throw(401, '未取得授权');
+      ctx.throw(statusHelper.NO_PERMISSION.code, statusHelper.NO_PERMISSION.desc);
       return;
     }
     ctx.logger.info(`解析token成功，用户是${userObj.username}!`);
     // 设置 Session
     ctx.session.user = userObj;
-    ctx.session.maxAge = 24 * 60 * 60 * 1000; // 1天
+    ctx.session.maxAge = ctx.app.config.sessionMaxAge;
     ctx.logger.info('设置 Session:', ctx.session.user.username);
     return userObj;
   };
@@ -62,6 +63,7 @@ module.exports = app => {
     }
     const user = await this.service.user.getUserInfo(userObj.username);
     this.logger.info('用户信息:', user.username);
+    // TODO: url与菜单权限判断
     return user && user.IsManager === 1;
   });
 };

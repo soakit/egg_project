@@ -1,5 +1,6 @@
 'use strict';
 const md5 = require('md5');
+const { statusHelper } = require('../utils/constants.js');
 module.exports = app => {
   class UserController extends app.Controller {
     async getToken() {
@@ -20,21 +21,21 @@ module.exports = app => {
           return;
         }
         this.fail({
-          code: 4001001,
-          msg: '用户名或密码不正确!',
+          code: statusHelper.PASSWORD_ERR.code,
+          msg: statusHelper.PASSWORD_ERR.desc,
         });
       } catch (error) {
         ctx.logger.error('获取token错误:', error);
         if (error) {
           if (error.code === 'invalid_param') {
             this.fail({
-              code: 4000001,
-              msg: '参数或参数类型错误!',
+              code: statusHelper.PARAM_ERR.code,
+              msg: statusHelper.PARAM_ERR.desc,
             });
           } else {
             this.fail({
-              code: 1000000,
-              msg: '未知错误!',
+              code: statusHelper.UNKNOWN_ERR.code,
+              msg: statusHelper.UNKNOWN_ERR.desc,
             });
           }
         }

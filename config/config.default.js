@@ -8,7 +8,8 @@ module.exports = appInfo => {
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1509955660984_4087';
-  config.tokenExpireDays = 3; // token有效期
+  config.tokenExpireDays = 3; // token3天有效期
+  config.sessionMaxAge = 24 * 60 * 60 * 1000; // session1天有效
 
   config.siteFile = {
     '/favicon.ico': fs.readFileSync(
