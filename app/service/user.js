@@ -32,15 +32,16 @@ module.exports = app => {
     }
 
     async getUserInfo(username) {
-      // const row = await this.models.User.findOne({
-      //   attributes: { exclude: [ 'password' ] },
-      //   where: {
-      //     username,
-      //   },
-      //   include: [{
-      //     model: this.ctx.model.Menu,
-      //   }],
-      // });
+      // 不用sql方式
+      /* const row = await this.models.User.findOne({
+        attributes: { exclude: [ 'password' ] },
+        where: {
+          username,
+        },
+        include: [{
+          model: this.ctx.model.Menu,
+        }],
+      }); */
       // sql方式
       const data = await this.models.User.sequelize.query(sqlHelper.USER_INFO(username), {
         model: this.ctx.model.User,
