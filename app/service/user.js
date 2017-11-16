@@ -43,7 +43,7 @@ module.exports = app => {
         }],
       }); */
       // sql方式
-      const data = await this.models.User.sequelize.query(sqlHelper.USER_INFO(username), {
+      const data = await this.models.query(sqlHelper.USER_INFO(username), {
         model: this.ctx.model.User,
         raw: true,
       });
