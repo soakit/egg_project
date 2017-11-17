@@ -2,6 +2,7 @@
 
 const AES = require('crypto-js/aes');
 const sqlHelper = require('../utils/sql.js');
+
 module.exports = app => {
   class UserService extends app.Service {
     constructor(ctx) {

@@ -1,6 +1,8 @@
 'use strict';
+
 const md5 = require('md5');
 const { statusHelper } = require('../utils/constants.js');
+
 module.exports = app => {
   class UserController extends app.Controller {
     async getToken() {

@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = () => {
   return function* (next) {
     const { query = {}, body = {}, method } = this.request;

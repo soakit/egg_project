@@ -1,6 +1,8 @@
 'use strict';
+
 const { statusHelper } = require('../app/utils/constants.js');
 const CryptoJS = require('crypto-js');
+
 module.exports = app => {
   app.role.failureHandler = function(action) {
     this.app.logger.error('无权限访问，action为', action);
@@ -40,8 +42,8 @@ module.exports = app => {
     }
     ctx.logger.info(`解析token成功，用户是${userObj.username}!`);
     // 设置 Session
-    ctx.session.user = userObj;
     ctx.session.maxAge = ctx.app.config.sessionMaxAge;
+    ctx.session.user = userObj;
     ctx.logger.info('设置 Session:', ctx.session.user.username);
     return userObj;
   };
