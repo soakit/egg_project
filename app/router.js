@@ -10,6 +10,5 @@ module.exports = app => {
   app.get('/evaluationModule', validator, Controllers.dict.getEvaluationModule);
   app.get('/publicPriceCategory', validator, Controllers.dict.getPublicPriceCategory);
 
-  app.get('/admin/taskprice/tree', isManager, 'admin.index');
-  app.get('/admin/taskprice/list', isManager, 'admin.index');
+  app.get('/admin/taskprices', isManager, Controllers.taskprices.getList);
 };
