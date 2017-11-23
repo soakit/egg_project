@@ -9,8 +9,6 @@ module.exports = {
         Staff.DepartmentID,
         Staff.ChnName,
         Staff.ExchangeEmail,
-        Staff.Status,
-        Staff.IsManager,
         Staff.Gender,
         Staff.WxOpenID,
         Staff.DepartLocationString,
@@ -32,6 +30,22 @@ module.exports = {
         ) ON Permissionstaffmenu.StaffId = Staff.StaffID
       WHERE
         Staff.StaffID = ${StaffID};`;
+  },
+  TASK_PRICE_TREE() {
+    return `
+      SELECT DISTINCT
+        p.TaskUnitPriceCode,
+        p.ParentTaskUnitPriceCode,
+        p.DepartmentID,
+        d2.Label as DepartmentName,
+        p.ModuleID,
+        d1.Label as ModuleName
+      FROM
+        taskunitprice p
+      LEFT JOIN dict AS d1 ON d1.value= p.ModuleID AND d1.type = 'Price_Module'
+      LEFT JOIN dict AS d2 ON d2.value= p.DepartmentID AND d2.type = 'Price_Depart'
+      WHERE p.DepartmentID != ''
+      ORDER BY p.DepartmentID;`;
   },
 };
 

@@ -1,7 +1,9 @@
 'use strict';
 
+const sqlHelper = require('../utils/sql.js');
+
 module.exports = app => {
-  class TaskpricesService extends app.Service {
+  class TaskpriceService extends app.Service {
     constructor(ctx) {
       super(ctx);
       this.models = this.ctx.model;
@@ -19,6 +21,13 @@ module.exports = app => {
       });
       return row;
     }
+    async getTree() {
+      const data = await this.models.query(sqlHelper.TASK_PRICE_TREE(), {
+        model: this.ctx.model.TaskPrice,
+        raw: true,
+      });
+      return data;
+    }
   }
-  return TaskpricesService;
+  return TaskpriceService;
 };

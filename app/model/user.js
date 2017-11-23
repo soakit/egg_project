@@ -26,12 +26,10 @@ module.exports = app => {
       field: 'Md5Password',
       type: STRING(50),
     },
-    Status: {
-      type: BIGINT(11),
-    },
-    IsManager: {
-      type: INTEGER,
-    },
+    // 状态
+    // Status: {
+    //   type: BIGINT(11),
+    // },
     Gender: {
       type: BIGINT(11),
     },

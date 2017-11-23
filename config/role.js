@@ -58,7 +58,7 @@ module.exports = app => {
   /**
    * 验证权限
    */
-  app.role.use('isManager', async function() {
+  app.role.use('adminValidator', async function() {
     const userObj = await validateToken(this);
     if (!userObj.username) {
       return false;
@@ -66,6 +66,6 @@ module.exports = app => {
     const user = await this.service.user.getUserInfo(userObj.username);
     this.logger.info('用户信息:', user.username);
     // TODO: url与菜单权限判断
-    return user && user.IsManager === 1;
+    return true;
   });
 };
