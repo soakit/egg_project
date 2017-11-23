@@ -44,8 +44,8 @@ module.exports = app => {
             DepartmentName: depArr[1],
             value: depArr[0],
             label: depArr[1],
-            children: [],
             level: 1,
+            children: [],
           };
           data.push(departObj);
         }
@@ -55,19 +55,38 @@ module.exports = app => {
           ModuleName: modArr[1],
           value: modArr[0],
           label: modArr[1],
-          children: [],
           level: 2,
+          children: [],
         };
         departObj.children.push(modObj);
       }
       // 最底层任务类型
       const allTaskTypes = uniqBy(row.filter(item => {
         return item.ParentTaskUnitPriceCode !== 'C' && item.ParentTaskUnitPriceCode !== '';
-      }), 'ParentTaskUnitPriceCode').map(item => item.ParentTaskUnitPriceCode);
-      console.log(allTaskTypes);
-      // TODO: 往上找到ParentTaskUnitPriceCode是C的挂在模块下
-
+      }), 'ParentTaskUnitPriceCode');
+      // console.log(allTaskTypes);
+      // 往上找到ParentTaskUnitPriceCode是C的挂在模块下
+      allTaskTypes.forEach(type => {
+        const s = this.setParent(type, row, 0);
+        // console.log(s);
+        s && modObj.children.push(s);
+      });
       return data;
+    }
+    setParent(cur, row, i) {
+      const parent = row.find(item => item.TaskUnitPriceCode === cur.ParentTaskUnitPriceCode);
+      if (!parent) {
+        return null;
+      }
+      if (i > 0) {
+        parent.children = [];
+        parent.children.push(cur);
+      }
+      if (parent.ParentTaskUnitPriceCode !== 'C' && parent.ParentTaskUnitPriceCode !== '') {
+        i++;
+        this.setParent(parent, row, i);
+      }
+      return parent;
     }
   }
   return TaskpriceService;

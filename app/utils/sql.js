@@ -35,6 +35,7 @@ module.exports = {
     return `
       SELECT DISTINCT
         p.TaskUnitPriceCode,
+        p.TaskUnitPriceName,
         p.ParentTaskUnitPriceCode,
         p.DepartmentID,
         d2.Label as DepartmentName,
