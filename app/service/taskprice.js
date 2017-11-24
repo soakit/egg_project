@@ -10,14 +10,65 @@ module.exports = app => {
       super(ctx);
       this.models = this.ctx.model;
     }
-    async getList() {
-      const row = await this.models.Dict.findAll({
-        attributes: [ 'Value', 'Label' ],
-        where: {
-          Type: 'Public_Price_Category',
-          DelFlag: 0,
-        },
-        order: [[ 'Sort', 'ASC' ]],
+    async getList({
+      DepartmentID,
+      ModuleID,
+      TreeTaskUnitPriceCode,
+      TaskUnitPriceCode,
+      TaskUnitPriceName,
+      EvaluationModuleID,
+      CostBearers,
+      ShowDisable,
+      pageIndex = 1,
+      pageSize = 20,
+    }) {
+      const where = {};
+      if (DepartmentID) {
+        where.DepartmentID = DepartmentID;
+      }
+      if (ModuleID) {
+        where.ModuleID = ModuleID;
+      }
+      const arr = [];
+      if (TreeTaskUnitPriceCode) {
+        where.ParentTaskUnitPriceCode = TreeTaskUnitPriceCode;
+        where.TaskUnitPriceCode = {};
+        arr.push({
+          $eq: TreeTaskUnitPriceCode,
+        });
+        where.TaskUnitPriceCode.$or = arr;
+      }
+      if (TaskUnitPriceCode) {
+        if (arr.length) {
+          where.TaskUnitPriceCode.$or.push({
+            $like: `%${TaskUnitPriceCode}%`,
+          });
+        } else {
+          where.TaskUnitPriceCode = {};
+          where.TaskUnitPriceCode.$like = `%${TaskUnitPriceCode}%`;
+        }
+      }
+      if (TaskUnitPriceName) {
+        where.TaskUnitPriceName = {};
+        where.TaskUnitPriceName.$like = `%${TaskUnitPriceName}%`;
+      }
+      if (EvaluationModuleID) {
+        where.EvaluationModuleID = EvaluationModuleID;
+      }
+      if (CostBearers) {
+        where.CostBearers = {};
+        where.CostBearers.$like = `%${CostBearers}%`;
+      }
+      if (!ShowDisable) {
+        where.IsEnable = 1;
+      }
+      const row = await this.models.Taskprice.findAll({
+        where,
+        order: [
+          [ 'TaskUnitPriceCode', 'ASC' ],
+        ],
+        offset: (pageIndex - 1) * pageSize,
+        limit: pageSize,
       });
       return row;
     }
@@ -32,13 +83,12 @@ module.exports = app => {
       });
       const data = [],
         obj = {};
-      let departObj,
-        modObj;
+      let departObj;
       for (const i in depModGroup) {
         const iArr = i.split('_');
+        const depArr = iArr[0].split(':');
         if (!obj.hasOwnProperty(iArr[0])) {
           obj[iArr[0]] = 1;
-          const depArr = iArr[0].split(':');
           departObj = {
             DepartmentID: depArr[0],
             DepartmentName: depArr[1],
@@ -49,14 +99,15 @@ module.exports = app => {
           data.push(departObj);
         }
         const modArr = iArr[1].split(':');
-        modObj = {
+        departObj.children.push({
+          DepartmentID: depArr[0],
+          DepartmentName: depArr[1],
           ModuleID: modArr[0],
           ModuleName: modArr[1],
           value: modArr[0],
           name: modArr[1],
           children: [],
-        };
-        departObj.children.push(modObj);
+        });
       }
       // 最底层任务类型
       const allTaskTypes = uniqBy(row.filter(item => {

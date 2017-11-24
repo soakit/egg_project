@@ -3,7 +3,7 @@
 module.exports = app => {
   const { CHAR, TEXT, TINYINT, DATE, DECIMAL, INTEGER } = app.Sequelize;
 
-  const TaskPrice = app.model.define('taskunitprice', {
+  const Taskprice = app.model.define('taskunitprice', {
     TaskUnitPriceID: {
       type: CHAR(36),
       allowNull: false,
@@ -89,9 +89,9 @@ module.exports = app => {
     },
   });
 
-  TaskPrice.associate = function() {
+  Taskprice.associate = function() {
   };
 
-  return TaskPrice;
+  return Taskprice;
 
 };
