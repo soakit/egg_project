@@ -45,8 +45,8 @@ module.exports = {
         taskunitprice p
       LEFT JOIN dict AS d1 ON d1.value= p.ModuleID AND d1.type = 'Price_Module'
       LEFT JOIN dict AS d2 ON d2.value= p.DepartmentID AND d2.type = 'Price_Depart'
-      WHERE p.DepartmentID = 1
-    `;
+      `;
+    // WHERE p.DepartmentID = 1
   },
 };
 

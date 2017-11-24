@@ -43,8 +43,7 @@ module.exports = app => {
             DepartmentID: depArr[0],
             DepartmentName: depArr[1],
             value: depArr[0],
-            label: depArr[1],
-            level: 1,
+            name: depArr[1],
             children: [],
           };
           data.push(departObj);
@@ -54,8 +53,7 @@ module.exports = app => {
           ModuleID: modArr[0],
           ModuleName: modArr[1],
           value: modArr[0],
-          label: modArr[1],
-          level: 2,
+          name: modArr[1],
           children: [],
         };
         departObj.children.push(modObj);
@@ -64,12 +62,14 @@ module.exports = app => {
       const allTaskTypes = uniqBy(row.filter(item => {
         return item.ParentTaskUnitPriceCode !== 'C' && item.ParentTaskUnitPriceCode !== '';
       }), 'ParentTaskUnitPriceCode');
-      // console.log(allTaskTypes);
-      // 往上找到ParentTaskUnitPriceCode是C的挂在模块下
+      // 往上找到ParentTaskUnitPriceCode是C的挂在与之相关的模块下
       allTaskTypes.forEach(type => {
         const s = this.setParent(type, row, 0);
-        // console.log(s);
-        s && modObj.children.push(s);
+        const curDepart = data.find(item => item.DepartmentID === s.DepartmentID);
+        const curModule = curDepart && curDepart.children.find(item => item.ModuleID === s.ModuleID);
+        s && curModule && curModule.children.push(Object.assign({
+          name: s.TaskUnitPriceName,
+        }, s));
       });
       return data;
     }
@@ -80,7 +80,9 @@ module.exports = app => {
       }
       if (i > 0) {
         parent.children = [];
-        parent.children.push(cur);
+        parent.children.push(Object.assign({
+          name: cur.TaskUnitPriceName,
+        }, cur));
       }
       if (parent.ParentTaskUnitPriceCode !== 'C' && parent.ParentTaskUnitPriceCode !== '') {
         i++;
