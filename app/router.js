@@ -10,6 +10,7 @@ module.exports = app => {
   app.get('/evaluationModule', validator, Controllers.dict.getEvaluationModule);
   app.get('/publicPriceCategory', validator, Controllers.dict.getPublicPriceCategory);
 
-  app.get('/admin/taskprice/list', adminValidator, Controllers.taskprice.getList);
   app.get('/admin/taskprice/tree', adminValidator, Controllers.taskprice.getTree);
+  app.get('/admin/taskprice/list', adminValidator, Controllers.taskprice.getList);
+  app.get('/admin/taskprice/export', adminValidator, Controllers.taskprice.downList);
 };

@@ -109,7 +109,7 @@ module.exports = app => {
           children: [],
         });
       }
-      // 最底层任务类型
+      // 最底层的任务类型
       const allTaskTypes = uniqBy(row.filter(item => {
         return item.ParentTaskUnitPriceCode !== 'C' && item.ParentTaskUnitPriceCode !== '';
       }), 'ParentTaskUnitPriceCode');
@@ -124,11 +124,16 @@ module.exports = app => {
       });
       return data;
     }
+    async downList() {
+      // TODO:
+      return [];
+    }
     setParent(cur, row, i) {
       const parent = row.find(item => item.TaskUnitPriceCode === cur.ParentTaskUnitPriceCode);
       if (!parent) {
         return null;
       }
+      // 最后一层(没有子的)不展示在树上
       if (i > 0) {
         parent.children = [];
         parent.children.push(Object.assign({

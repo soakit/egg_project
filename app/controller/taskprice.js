@@ -48,6 +48,40 @@ module.exports = app => {
       const tree = await service.taskprice.getTree();
       this.success(tree);
     }
+    async downList() {
+      const { ctx, service } = this;
+      const { request } = ctx;
+      let {
+        DepartmentID,
+        ModuleID,
+        TreeTaskUnitPriceCode,
+        TaskUnitPriceCode,
+        TaskUnitPriceName,
+        EvaluationModuleID,
+        CostBearers,
+        ShowDisable,
+      } = request.query;
+      ShowDisable = ShowDisable - 0;
+      if (isNaN(ShowDisable)) {
+        this.fail({
+          code: statusHelper.PARAM_ERR.code,
+          msg: statusHelper.PARAM_ERR.desc,
+        });
+        return;
+      }
+      const modules = await service.taskprice.downList({
+        DepartmentID,
+        ModuleID,
+        TreeTaskUnitPriceCode,
+        TaskUnitPriceCode,
+        TaskUnitPriceName,
+        EvaluationModuleID,
+        CostBearers,
+        ShowDisable: !!ShowDisable,
+      });
+      // TODO: 下载也是这样返回？
+      this.success(modules);
+    }
   }
   return TaskpriceController;
 };
