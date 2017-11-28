@@ -12,5 +12,5 @@ module.exports = app => {
 
   app.get('/admin/taskprice/tree', adminValidator, Controllers.taskprice.getTree);
   app.get('/admin/taskprice/list', adminValidator, Controllers.taskprice.getList);
-  app.get('/admin/taskprice/export', Controllers.taskprice.downList);
+  app.get('/admin/taskprice/export', adminValidator, Controllers.taskprice.downList);
 };
