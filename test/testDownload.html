@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="renderer" content="webkit">
+	<title>测试下载</title>
+	<script src="http://3gimg.qq.com/mig-web/iSimply/js/jquery/jquery-1.11.1.min.js"></script>
+</head>
+
+<body>
+	<button id="btn">Click me</button>
+	<script>
+		function downloadData(data) {
+			// 定义一个iframe
+			var ifr = $('<iframe name="nm_iframe" style="display:none;"></iframe>');
+			ifr.appendTo('body')
+
+			//定义一个form表单
+			var myform = $("<form></form>");
+			myform.attr('method', 'post')
+			myform.attr('action', "/admin/taskprice/export");
+			myform.attr('target', 'nm_iframe');
+
+			for (var i in data) {
+				var field = $("<input type='hidden' name='" + i + "' />")
+				field.attr('value', data[i]);
+				myform.append(field);
+			}
+
+			myform.appendTo('body').submit(); //must add this line for higher html spec
+		};
+		$('#btn').on('click', function () {
+			downloadData({
+				DepartmentID: '',
+				ModuleID: '',
+				TreeTaskUnitPriceCode: '',
+				TaskUnitPriceCode: '',
+				TaskUnitPriceName: '',
+				EvaluationModuleID: '',
+				CostBearers: '',
+				ShowDisable: 1
+			})
+		});
+
+	</script>
+</body>
+
+</html>

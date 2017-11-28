@@ -51,6 +51,7 @@ module.exports = app => {
     async downList() {
       const { ctx, service } = this;
       const { request } = ctx;
+      const isGet = request.method === 'GET';
       let {
         DepartmentID,
         ModuleID,
@@ -60,7 +61,7 @@ module.exports = app => {
         EvaluationModuleID,
         CostBearers,
         ShowDisable,
-      } = request.query;
+      } = request[isGet ? 'query' : 'body'];
       ShowDisable = ShowDisable - 0;
       if (isNaN(ShowDisable)) {
         this.fail({

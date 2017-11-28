@@ -12,5 +12,8 @@ module.exports = app => {
 
   app.get('/admin/taskprice/tree', adminValidator, Controllers.taskprice.getTree);
   app.get('/admin/taskprice/list', adminValidator, Controllers.taskprice.getList);
+  // get时使用location
   app.get('/admin/taskprice/export', adminValidator, Controllers.taskprice.downList);
+  // post时用表单提交 testDownload.html
+  app.post('/admin/taskprice/export', adminValidator, Controllers.taskprice.downList);
 };
