@@ -1,5 +1,8 @@
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
+
 module.exports = app => {
   class BaseController extends app.Controller {
     async cacheUser(username, password) {
@@ -17,6 +20,12 @@ module.exports = app => {
         code,
         msg,
       };
+    }
+    file(fileName) {
+      const filePath = path.resolve(this.app.config.static.dir, fileName);
+      this.ctx.attachment(fileName);
+      this.ctx.set('Content-Type', 'application/octet-stream');
+      this.ctx.body = fs.createReadStream(filePath);
     }
     notFound(msg) {
       msg = msg || 'page not found';

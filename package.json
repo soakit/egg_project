@@ -13,7 +13,9 @@
     "egg-userrole": "^1.1.2",
     "egg-validate": "^1.0.0",
     "md5": "^2.2.1",
-    "mysql2": "^1.4.2"
+    "moment": "^2.19.2",
+    "mysql2": "^1.4.2",
+    "xlsx": "^0.11.10"
   },
   "devDependencies": {
     "autod": "^2.10.0",

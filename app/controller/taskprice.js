@@ -69,7 +69,7 @@ module.exports = app => {
         });
         return;
       }
-      const modules = await service.taskprice.downList({
+      const name = await service.taskprice.downList({
         DepartmentID,
         ModuleID,
         TreeTaskUnitPriceCode,
@@ -79,8 +79,7 @@ module.exports = app => {
         CostBearers,
         ShowDisable: !!ShowDisable,
       });
-      // TODO: 下载也是这样返回？
-      this.success(modules);
+      this.file(name);
     }
   }
   return TaskpriceController;
