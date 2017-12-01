@@ -23,7 +23,7 @@ module.exports = app => {
       ShowDisable,
       pageIndex = 1,
       pageSize = 20,
-    }) {
+    }, isAll) {
       const where = {};
       if (DepartmentID) {
         where.DepartmentID = DepartmentID;
@@ -64,12 +64,16 @@ module.exports = app => {
       if (!ShowDisable) {
         where.IsEnable = 1;
       }
-      const row = await this.models.Taskprice.findAll({
+      const condition = {
         where,
         order: [[ 'TaskUnitPriceCode', 'ASC' ]],
-        offset: (pageIndex - 1) * pageSize,
-        limit: pageSize,
-      });
+        raw: true,
+      };
+      if (!isAll) {
+        condition.offset = (pageIndex - 1) * pageSize;
+        condition.limit = pageSize;
+      }
+      const row = await this.models.Taskprice.findAll(condition);
       return row;
     }
     async getTree() {
@@ -143,31 +147,11 @@ module.exports = app => {
       });
       return data;
     }
-    async downList() {
-      const _headers = [ 'id', 'name', 'age', 'country', 'remark' ];
-      const _data = [
-        {
-          id: '1',
-          name: 'test1',
-          age: '30',
-          country: 'China',
-          remark: 'hello',
-        },
-        {
-          id: '2',
-          name: 'test2',
-          age: '20',
-          country: 'America',
-          remark: 'world',
-        },
-        {
-          id: '3',
-          name: 'test3',
-          age: '18',
-          country: 'Unkonw',
-          remark: '???',
-        },
-      ];
+    async downList(params) {
+      const _headers = [ '任务类型代码', '任务类型名称', '计价方式描述', '单位', '单价', '成本承担人', '项目说明', '任务完成标志', '任务交付方式', '是否需要审批', '归属任务类型代码', '归属部门', '模块', '考核归属模块', '公共单价类别', '是否需要验收', '是否需上传凭证' ];
+      const _headersKeys = [ 'TaskUnitPriceCode', 'TaskUnitPriceName', 'ValuationMethodDescr', 'Unit', 'Price', 'CostBearers', 'ProjectDescription', 'FinishFlag', 'DeliverWay', 'RequiredCheck', 'ParentTaskUnitPriceCode', 'DepartmentName', 'ModuleName', 'EvaluationModuleName', 'PublicPriceCategoryName', 'IsAcceptance', 'IsVerify' ];
+      // TODO: 1.包含[DepartmentName,ModuleName,EvaluationModuleName,PublicPriceCategoryName] 2.导出全部
+      const _data = await this.getList(params, false);
       const headers = _headers
         // 为 _headers 添加对应的单元格位置
         .map((v, i) =>
@@ -182,7 +166,7 @@ module.exports = app => {
       const data = _data
         // 匹配 headers 的位置，生成对应的单元格数据
         .map((v, i) =>
-          _headers.map((k, j) =>
+          _headersKeys.map((k, j) =>
             Object.assign(
               {},
               { v: v[k], position: String.fromCharCode(65 + j) + (i + 2) }
