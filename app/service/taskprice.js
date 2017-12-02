@@ -24,56 +24,66 @@ module.exports = app => {
       pageIndex = 1,
       pageSize = 20,
     }, isAll) {
-      const where = {};
-      if (DepartmentID) {
-        where.DepartmentID = DepartmentID;
-      }
-      if (ModuleID) {
-        where.ModuleID = ModuleID;
-      }
-      const arr = [];
-      if (TreeTaskUnitPriceCode) {
-        where.ParentTaskUnitPriceCode = TreeTaskUnitPriceCode;
-        where.TaskUnitPriceCode = {};
-        arr.push({
-          $eq: TreeTaskUnitPriceCode,
-        });
-        where.TaskUnitPriceCode.$or = arr;
-      }
-      if (TaskUnitPriceCode) {
-        if (arr.length) {
-          where.TaskUnitPriceCode.$or.push({
-            $like: `%${TaskUnitPriceCode}%`,
-          });
-        } else {
-          where.TaskUnitPriceCode = {};
-          where.TaskUnitPriceCode.$like = `%${TaskUnitPriceCode}%`;
+      let row;
+      if (!isAll) { // 分页获取
+        const where = {};
+        if (DepartmentID) {
+          where.DepartmentID = DepartmentID;
         }
-      }
-      if (TaskUnitPriceName) {
-        where.TaskUnitPriceName = {};
-        where.TaskUnitPriceName.$like = `%${TaskUnitPriceName}%`;
-      }
-      if (EvaluationModuleID) {
-        where.EvaluationModuleID = EvaluationModuleID;
-      }
-      if (CostBearers) {
-        where.CostBearers = {};
-        where.CostBearers.$like = `%${CostBearers}%`;
-      }
-      if (!ShowDisable) {
-        where.IsEnable = 1;
-      }
-      const condition = {
-        where,
-        order: [[ 'TaskUnitPriceCode', 'ASC' ]],
-        raw: true,
-      };
-      if (!isAll) {
+        if (ModuleID) {
+          where.ModuleID = ModuleID;
+        }
+        const arr = [];
+        if (TreeTaskUnitPriceCode) {
+          where.ParentTaskUnitPriceCode = TreeTaskUnitPriceCode;
+          where.TaskUnitPriceCode = {};
+          arr.push({
+            $eq: TreeTaskUnitPriceCode,
+          });
+          where.TaskUnitPriceCode.$or = arr;
+        }
+        if (TaskUnitPriceCode) {
+          if (arr.length) {
+            where.TaskUnitPriceCode.$or.push({
+              $like: `%${TaskUnitPriceCode}%`,
+            });
+          } else {
+            where.TaskUnitPriceCode = {};
+            where.TaskUnitPriceCode.$like = `%${TaskUnitPriceCode}%`;
+          }
+        }
+        if (TaskUnitPriceName) {
+          where.TaskUnitPriceName = {};
+          where.TaskUnitPriceName.$like = `%${TaskUnitPriceName}%`;
+        }
+        if (EvaluationModuleID) {
+          where.EvaluationModuleID = EvaluationModuleID;
+        }
+        if (CostBearers) {
+          where.CostBearers = {};
+          where.CostBearers.$like = `%${CostBearers}%`;
+        }
+        if (!ShowDisable) {
+          where.IsEnable = 1;
+        }
+        const condition = {
+          where,
+          order: [[ 'TaskUnitPriceCode', 'ASC' ]],
+          raw: true,
+        };
+
         condition.offset = (pageIndex - 1) * pageSize;
         condition.limit = pageSize;
+        row = await this.models.Taskprice.findAll(condition);
+      } else { // 全部
+        let conditionStr = '';
+        conditionStr += 'WHERE 1 = 1 ';
+        // TODO: 拼接条件
+        row = await this.models.query(sqlHelper.TASK_PRICE(conditionStr), {
+          model: this.ctx.model.Dict,
+          raw: true,
+        });
       }
-      const row = await this.models.Taskprice.findAll(condition);
       return row;
     }
     async getTree() {
@@ -150,8 +160,7 @@ module.exports = app => {
     async downList(params) {
       const _headers = [ '任务类型代码', '任务类型名称', '计价方式描述', '单位', '单价', '成本承担人', '项目说明', '任务完成标志', '任务交付方式', '是否需要审批', '归属任务类型代码', '归属部门', '模块', '考核归属模块', '公共单价类别', '是否需要验收', '是否需上传凭证' ];
       const _headersKeys = [ 'TaskUnitPriceCode', 'TaskUnitPriceName', 'ValuationMethodDescr', 'Unit', 'Price', 'CostBearers', 'ProjectDescription', 'FinishFlag', 'DeliverWay', 'RequiredCheck', 'ParentTaskUnitPriceCode', 'DepartmentName', 'ModuleName', 'EvaluationModuleName', 'PublicPriceCategoryName', 'IsAcceptance', 'IsVerify' ];
-      // TODO: 1.包含[DepartmentName,ModuleName,EvaluationModuleName,PublicPriceCategoryName] 2.导出全部
-      const _data = await this.getList(params, false);
+      const _data = await this.getList(params, true);
       const headers = _headers
         // 为 _headers 添加对应的单元格位置
         .map((v, i) =>
