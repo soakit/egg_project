@@ -63,7 +63,7 @@ module.exports = {
       left JOIN Dict g on p.PublicPriceCategory = g.Value and g.type = 'Public_Price_Category'
       ${condition}
       ORDER BY p.TaskUnitPriceCode
-      limit 0, 10
+      limit 0, 20
     `;
   },
 };

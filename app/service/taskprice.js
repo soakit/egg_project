@@ -33,24 +33,23 @@ module.exports = app => {
         if (ModuleID) {
           where.ModuleID = ModuleID;
         }
-        const arr = [];
         if (TreeTaskUnitPriceCode) {
-          where.ParentTaskUnitPriceCode = TreeTaskUnitPriceCode;
-          where.TaskUnitPriceCode = {};
-          arr.push({
-            $eq: TreeTaskUnitPriceCode,
-          });
-          where.TaskUnitPriceCode.$or = arr;
+          where.$or = [{
+            ParentTaskUnitPriceCode: {
+              $eq: TreeTaskUnitPriceCode,
+            },
+          }, {
+            ParentTaskUnitPriceCode: {
+              $eq: 'C',
+            },
+            TaskUnitPriceCode: {
+              $eq: TreeTaskUnitPriceCode,
+            },
+          }];
         }
         if (TaskUnitPriceCode) {
-          if (arr.length) {
-            where.TaskUnitPriceCode.$or.push({
-              $like: `%${TaskUnitPriceCode}%`,
-            });
-          } else {
-            where.TaskUnitPriceCode = {};
-            where.TaskUnitPriceCode.$like = `%${TaskUnitPriceCode}%`;
-          }
+          where.TaskUnitPriceCode = {};
+          where.TaskUnitPriceCode.$like = `%${TaskUnitPriceCode}%`;
         }
         if (TaskUnitPriceName) {
           where.TaskUnitPriceName = {};
@@ -77,8 +76,36 @@ module.exports = app => {
         row = await this.models.Taskprice.findAll(condition);
       } else { // 全部
         let conditionStr = '';
-        conditionStr += 'WHERE 1 = 1 ';
-        // TODO: 拼接条件
+        conditionStr += 'WHERE 1 = 1';
+        // 拼接条件
+        if (DepartmentID) {
+          conditionStr += ` AND DepartmentID=${DepartmentID}`;
+        }
+        if (ModuleID) {
+          conditionStr += ` AND ModuleID=${ModuleID}`;
+        }
+        if (TreeTaskUnitPriceCode) {
+          conditionStr += ` AND (
+            ParentTaskUnitPriceCode=${TreeTaskUnitPriceCode} OR (
+              ParentTaskUnitPriceCode = 'C' AND TaskUnitPriceCode=${TreeTaskUnitPriceCode}
+            )
+          )`;
+        }
+        if (TaskUnitPriceCode) {
+          conditionStr += ` AND TaskUnitPriceCode like "%${TaskUnitPriceCode}%"`;
+        }
+        if (TaskUnitPriceName) {
+          conditionStr += ` AND TaskUnitPriceName like "%${TaskUnitPriceName}%"`;
+        }
+        if (EvaluationModuleID) {
+          conditionStr += ` AND EvaluationModuleID=${EvaluationModuleID}`;
+        }
+        if (CostBearers) {
+          conditionStr += ` AND CostBearers like "%${CostBearers}%"`;
+        }
+        if (!ShowDisable) {
+          conditionStr += ' AND IsEnable=1';
+        }
         row = await this.models.query(sqlHelper.TASK_PRICE(conditionStr), {
           model: this.ctx.model.Dict,
           raw: true,
