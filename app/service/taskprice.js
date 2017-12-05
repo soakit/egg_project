@@ -1,7 +1,8 @@
 'use strict';
 const path = require('path');
-const XLSX = require('xlsx');
 const moment = require('moment');
+const xlsx = require('node-xlsx').default;
+const utils = require('../utils/index.js').utils;
 const sqlHelper = require('../utils/sql.js');
 const groupBy = require('lodash/groupBy');
 const uniqBy = require('lodash/uniqBy');
@@ -185,53 +186,32 @@ module.exports = app => {
       return data;
     }
     async downList(params) {
-      const _headers = [ '任务类型代码', '任务类型名称', '计价方式描述', '单位', '单价', '成本承担人', '项目说明', '任务完成标志', '任务交付方式', '是否需要审批', '归属任务类型代码', '归属部门', '模块', '考核归属模块', '公共单价类别', '是否需要验收', '是否需上传凭证' ];
-      const _headersKeys = [ 'TaskUnitPriceCode', 'TaskUnitPriceName', 'ValuationMethodDescr', 'Unit', 'Price', 'CostBearers', 'ProjectDescription', 'FinishFlag', 'DeliverWay', 'RequiredCheck', 'ParentTaskUnitPriceCode', 'DepartmentName', 'ModuleName', 'EvaluationModuleName', 'PublicPriceCategoryName', 'IsAcceptance', 'IsVerify' ];
-      const _data = await this.getList(params, true);
-      const headers = _headers
-        // 为 _headers 添加对应的单元格位置
-        .map((v, i) =>
-          Object.assign({}, { v, position: String.fromCharCode(65 + i) + 1 })
-        )
-        // 转换成 worksheet 需要的结构
-        .reduce(
-          (prev, next) =>
-            Object.assign({}, prev, { [next.position]: { v: next.v } }),
-          {}
-        );
-      const data = _data
-        // 匹配 headers 的位置，生成对应的单元格数据
-        .map((v, i) =>
-          _headersKeys.map((k, j) =>
-            Object.assign(
-              {},
-              { v: v[k], position: String.fromCharCode(65 + j) + (i + 2) }
-            )
-          )
-        )
-        .reduce((prev, next) => prev.concat(next))
-        .reduce(
-          (prev, next) =>
-            Object.assign({}, prev, { [next.position]: { v: next.v } }),
-          {}
-        );
-      // 合并 headers 和 data
-      const output = Object.assign({}, headers, data);
-      // 获取所有单元格的位置
-      const outputPos = Object.keys(output);
-      // 计算出范围
-      const ref = outputPos[0] + ':' + outputPos[outputPos.length - 1];
-      // 构建 workbook 对象
-      const wb = {
-        SheetNames: [ 'mySheet' ],
-        Sheets: {
-          mySheet: Object.assign({}, output, { '!ref': ref }),
-        },
-      };
+      const headers = [ '任务类型代码', '任务类型名称', '计价方式描述', '单位', '单价', '成本承担人', '项目说明', '任务完成标志', '任务交付方式', '是否需要审批', '归属任务类型代码', '归属部门', '模块', '考核归属模块', '公共单价类别', '是否需要验收', '是否需上传凭证' ];
+      const dataKeys = [ 'TaskUnitPriceCode', 'TaskUnitPriceName', 'ValuationMethodDescr', 'Unit', 'Price', 'CostBearers', 'ProjectDescription', 'FinishFlag', 'DeliverWay', 'RequiredCheck', 'ParentTaskUnitPriceCode', 'DepartmentName', 'ModuleName', 'EvaluationModuleName', 'PublicPriceCategoryName', 'IsAcceptance', 'IsVerify' ];
+      const list = await this.getList(params, true);
+      let data = list.map(item => {
+        const arr = [];
+        dataKeys.forEach(key => {
+          arr.push(item[key]);
+        });
+        return arr;
+      });
+      data = [ headers ].concat(data);
+      const buffer = xlsx.build([{ name: '任务单价列表', data }]);
       const name = `任务单价列表_${moment().format('YYYYMMDDhhmmss')}.xlsx`;
+      // TODO: 错误不抛出异常，友好地返回前端
       // 导出 Excel
-      XLSX.writeFile(wb, path.resolve(this.app.config.static.dir, name));
+      await utils.writeFile(path.resolve(this.config.static.dir, name), buffer).then(err => {
+        if (err) throw err;
+        this.logger.info('任务单价列表写入成功!');
+      });
       return name;
+      // const wf = fs.writeFileSync(path.resolve(this.config.static.dir, name), buffer);
+      // if (wf === undefined) {
+      //   this.logger.info('任务单价列表写入成功!');
+      //   return name;
+      // }
+      // return null;
     }
     setParent(cur, row, i) {
       const parent = row.find(

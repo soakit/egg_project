@@ -48,7 +48,6 @@ module.exports = {
       `;
   },
   TASK_PRICE(condition) {
-    // TODO: 修复导出全部超时
     return `
       select
         p.*,
@@ -63,7 +62,6 @@ module.exports = {
       left JOIN Dict g on p.PublicPriceCategory = g.Value and g.type = 'Public_Price_Category'
       ${condition}
       ORDER BY p.TaskUnitPriceCode
-      limit 0, 20
     `;
   },
 };
