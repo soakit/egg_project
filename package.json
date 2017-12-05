@@ -15,7 +15,7 @@
     "md5": "^2.2.1",
     "moment": "^2.19.2",
     "mysql2": "^1.4.2",
-    "xlsx": "^0.11.10"
+    "node-xlsx": "^0.11.2"
   },
   "devDependencies": {
     "autod": "^2.10.0",
