@@ -199,19 +199,14 @@ module.exports = app => {
       data = [ headers ].concat(data);
       const buffer = xlsx.build([{ name: '任务单价列表', data }]);
       const name = `任务单价列表_${moment().format('YYYYMMDDhhmmss')}.xlsx`;
-      // TODO: 错误不抛出异常，友好地返回前端
       // 导出 Excel
-      await utils.writeFile(path.resolve(this.config.static.dir, name), buffer).then(err => {
-        if (err) throw err;
-        this.logger.info('任务单价列表写入成功!');
-      });
+      const res = await utils.writeFile(path.resolve(this.config.static.dir, name), buffer);
+      if (res) {
+        this.logger.error('任务单价列表写入失败:', res);
+        return null;
+      }
+      this.logger.info('任务单价列表写入成功!');
       return name;
-      // const wf = fs.writeFileSync(path.resolve(this.config.static.dir, name), buffer);
-      // if (wf === undefined) {
-      //   this.logger.info('任务单价列表写入成功!');
-      //   return name;
-      // }
-      // return null;
     }
     setParent(cur, row, i) {
       const parent = row.find(

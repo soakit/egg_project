@@ -22,7 +22,7 @@ module.exports = app => {
       };
     }
     file(fileName) {
-      const filePath = path.resolve(this.app.config.static.dir, fileName);
+      const filePath = path.resolve(this.config.static.dir, fileName);
       this.logger.info('开始读取文件:', fileName);
       this.ctx.attachment(fileName);
       this.ctx.set('Content-Type', 'application/octet-stream');

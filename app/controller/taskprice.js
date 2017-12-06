@@ -80,7 +80,14 @@ module.exports = app => {
         CostBearers,
         ShowDisable: !!ShowDisable,
       });
-      this.file(name);
+      if (name) {
+        this.file(name);
+      } else {
+        this.fail({
+          code: statusHelper.FILE_WRITE_ERR.code,
+          msg: statusHelper.FILE_WRITE_ERR.desc,
+        });
+      }
     }
   }
   return TaskpriceController;
